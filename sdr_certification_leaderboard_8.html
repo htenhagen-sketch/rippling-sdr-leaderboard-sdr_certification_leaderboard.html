@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rippling AI · SDR Certification Leaderboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--p:#3d0f4a;--a:#8b2fa8;--a2:#7b2d91;--bg:#f5f0f7;--w:#fff;--b:#e2d9e8;--t:#1a0a20;--m:#8a7a95;--f:'Figtree',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--t);font-family:var(--f);font-size:13px;}
+.hero{background:var(--p);background-image:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(139,47,168,.5) 0%,transparent 70%);padding:26px 16px 34px;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(255,255,255,.03) 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(255,255,255,.03) 40px);}
+.eye{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:7px;}
+.h1{font-size:clamp(18px,4vw,32px);font-weight:800;color:#fff;margin-bottom:5px;}
+.hsub{font-size:11px;color:rgba(255,255,255,.6);margin-bottom:12px;}
+.dp{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);padding:5px 14px;border-radius:100px;font-size:10px;font-weight:600;color:#fff;}
+.tabs{display:flex;background:var(--w);border-bottom:1px solid var(--b);padding:0 14px;}
+.tb{padding:10px 13px;font-family:var(--f);font-size:11px;font-weight:700;background:transparent;border:none;cursor:pointer;color:var(--m);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;}
+.tb.on{color:var(--a);border-bottom-color:var(--a);}
+.view{display:none;}.view.on{display:block;}
+.sbar{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:10px 14px;background:var(--w);border-bottom:1px solid var(--b);}
+.sk{display:flex;align-items:center;gap:5px;border:1px solid var(--b);border-radius:100px;padding:4px 11px;font-size:10px;font-weight:500;}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}.ds{background:#5c1a6e;}.du{background:#c084fc;}.dr{background:#f59e0b;}
+.sr{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:12px;background:var(--w);border-bottom:1px solid var(--b);}
+.sb{background:#fff;border:1px solid var(--b);border-radius:10px;padding:11px 20px;text-align:center;}
+.sn{font-size:24px;font-weight:800;color:var(--a);line-height:1;}
+.sn.dim{color:var(--m);font-size:17px;}
+.sl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--m);margin-top:4px;}
+.toolbar{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:var(--w);border-bottom:1px solid var(--b);}
+.cl{font-size:11px;color:var(--m);}
+.rbtn{display:flex;align-items:center;gap:4px;background:var(--a);color:#fff;border:none;padding:7px 14px;border-radius:7px;font-family:var(--f);font-size:11px;font-weight:700;cursor:pointer;transition:background .2s;}
+.rbtn:hover{background:var(--a2);}
+.rbtn:disabled{opacity:.6;cursor:not-allowed;}
+.sp{display:inline-block;}.sp.go{animation:spin .6s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.tw{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;background:var(--w);}
+thead tr{background:var(--p);}
+thead th{padding:9px 11px;text-align:left;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.7);white-space:nowrap;}
+th.c,td.c{text-align:center;}
+tbody tr{border-bottom:1px solid var(--b);transition:background .15s;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:hover{background:#faf5fc;}
+tbody tr.gr{background:#fffbea;}
+td{padding:10px 11px;vertical-align:middle;}
+.nm{font-size:13px;font-weight:700;}.em{font-size:10px;color:var(--m);margin-top:1px;}
+.badge{display:inline-flex;flex-direction:column;align-items:center;background:var(--p);color:#fff;border-radius:8px;padding:4px 10px;min-width:56px;}
+.badge .tot{font-size:15px;font-weight:800;line-height:1;}
+.badge .brk{font-size:8px;color:rgba(255,255,255,.6);margin-top:1px;white-space:nowrap;}
+.ubtn{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--b);background:#fff;border-radius:6px;padding:4px 9px;font-family:var(--f);font-size:11px;font-weight:600;cursor:pointer;color:var(--t);transition:all .15s;}
+.ubtn:hover,.ubtn.vd{border-color:var(--a);color:var(--a);}.ubtn.vd{background:#fdf4ff;}
+.lbtn{display:inline-flex;align-items:center;gap:4px;border:1.5px solid var(--a);color:var(--a);background:#fff;border-radius:6px;padding:4px 10px;font-family:var(--f);font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap;transition:all .15s;}
+.lbtn:hover{background:var(--a);color:#fff;}
+.rc{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:100px;cursor:pointer;border:1px solid;transition:opacity .15s;}
+.rc:hover{opacity:.75;}
+.rc.done{background:#fef3c7;color:#b45309;border-color:#fcd34d;}
+.rc.pend{background:#f3e8ff;color:var(--a);border-color:#d8b4fe;}
+/* MODAL */
+.ov{position:fixed;inset:0;background:rgba(30,10,40,.6);z-index:200;display:flex;align-items:center;justify-content:center;padding:10px;backdrop-filter:blur(4px);}
+.modal{background:var(--w);border-radius:16px;width:100%;max-width:520px;max-height:93vh;overflow-y:auto;box-shadow:0 20px 50px rgba(60,10,80,.3);}
+.mh{padding:14px 18px 10px;border-bottom:1px solid var(--b);display:flex;align-items:flex-start;justify-content:space-between;position:sticky;top:0;background:var(--w);z-index:1;border-radius:16px 16px 0 0;}
+.mt2{font-size:14px;font-weight:800;color:var(--p);}
+.ms{font-size:10px;color:var(--m);margin-top:1px;}
+.mx{background:none;border:none;font-size:17px;cursor:pointer;color:var(--m);padding:1px 5px;border-radius:4px;}
+.mx:hover{background:var(--bg);}
+.mbody{padding:12px 18px;}
+.secl{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--m);padding:7px 0 5px;border-bottom:1px solid var(--b);margin-bottom:10px;margin-top:4px;}
+.secl:first-child{margin-top:0;}
+.cr{display:flex;align-items:flex-start;gap:10px;margin-bottom:11px;}
+.cll{font-size:11px;font-weight:700;margin-bottom:1px;}
+.cld{font-size:9px;color:var(--m);line-height:1.4;}
+.stars{display:flex;gap:3px;flex-shrink:0;}
+.sbt{width:28px;height:28px;border-radius:6px;border:1.5px solid var(--b);background:#fff;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--f);color:var(--m);display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.sbt:hover{border-color:#f59e0b;background:#fffbeb;}
+.sbt.on{background:#f59e0b;border-color:#f59e0b;color:#fff;}
+.rntxt{width:100%;padding:8px 10px;border:1px solid var(--b);border-radius:8px;font-family:var(--f);font-size:11px;color:var(--t);resize:vertical;min-height:50px;}
+.rntxt:focus{outline:none;border-color:var(--a);}
+.mf{padding:10px 18px 14px;display:flex;gap:7px;justify-content:space-between;align-items:center;border-top:1px solid var(--b);position:sticky;bottom:0;background:var(--w);border-radius:0 0 16px 16px;}
+.tl2{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--m);font-weight:700;}
+.tn2{font-size:18px;font-weight:800;color:var(--a);}
+.bsv{padding:7px 16px;background:var(--a);color:#fff;border:none;border-radius:7px;font-family:var(--f);font-size:11px;font-weight:700;cursor:pointer;}
+.bsv:hover{background:var(--a2);}
+.bcn{padding:7px 12px;background:var(--bg);color:var(--m);border:1px solid var(--b);border-radius:7px;font-family:var(--f);font-size:11px;font-weight:700;cursor:pointer;}
+/* RUBRIC PANEL */
+.rp{padding:14px;max-width:860px;margin:0 auto;}
+.rp h2{font-size:17px;font-weight:800;color:var(--p);}
+.rp p{font-size:11px;color:var(--m);margin-top:3px;margin-bottom:12px;}
+.rcard{background:var(--w);border:1px solid var(--b);border-radius:10px;overflow:hidden;margin-bottom:10px;}
+.rct{padding:11px 13px;border-bottom:1px solid var(--b);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:7px;}
+.rcb{padding:11px 13px;}
+.rcg{display:grid;grid-template-columns:1fr 1fr;gap:0 16px;}
+@media(max-width:500px){.rcg{grid-template-columns:1fr;}}
+.rst{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--m);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--b);}
+.br{margin-bottom:6px;}
+.bm{display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px;}
+.bt{height:3px;background:var(--b);border-radius:3px;overflow:hidden;}
+.bf{height:100%;border-radius:3px;transition:width .5s;}
+.nb{background:var(--bg);border-radius:7px;padding:7px 10px;font-size:10px;color:var(--m);margin-top:8px;grid-column:1/-1;}
+.empty{text-align:center;padding:32px 12px;color:var(--m);background:var(--w);}
+.toast{position:fixed;bottom:12px;right:12px;background:var(--p);color:#fff;padding:8px 14px;border-radius:8px;font-size:11px;font-weight:600;transform:translateY(50px);opacity:0;transition:all .3s ease;z-index:999;box-shadow:0 8px 24px rgba(92,26,110,.3);}
+.toast.on{transform:translateY(0);opacity:1;}
+@keyframes fu{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+tbody tr{animation:fu .3s ease both;}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="eye">Rippling · SDR Certification</div>
+  <h1 class="h1">🏆 Rippling AI</h1>
+  <div class="hsub">SDR Pitch Certification Leaderboard</div>
+  <div class="dp">⏳ Deadline: EOD Friday, May 16th</div>
+</div>
+
+<div class="tabs">
+  <button class="tb on" onclick="sw('lb')">🏆 Leaderboard</button>
+  <button class="tb"    onclick="sw('rub')">📋 Score Rubrics</button>
+</div>
+
+<!-- LEADERBOARD -->
+<div id="lb-view" class="view on">
+  <div class="sbar">
+    <div class="sk"><span class="dot ds"></span><strong>Speed</strong>&nbsp;100→0 pts</div>
+    <div class="sk"><span class="dot du"></span><strong>Upvotes</strong>&nbsp;+10 each</div>
+    <div class="sk"><span class="dot dr"></span><strong>Rubric</strong>&nbsp;up to 65 pts</div>
+  </div>
+  <div class="sr">
+    <div class="sb"><div class="sn" id="ss">—</div><div class="sl">Submitted</div></div>
+    <div class="sb"><div class="sn" id="sc">—</div><div class="sl">Scored</div></div>
+    <div class="sb"><div class="sn" id="su">—</div><div class="sl">Upvotes</div></div>
+    <div class="sb"><div class="sn dim" id="st">—</div><div class="sl">Refreshed</div></div>
+  </div>
+  <div class="toolbar">
+    <div class="cl">Showing <strong id="cl">0</strong> submission(s) · ranked by score</div>
+    <button class="rbtn" id="rbtn" onclick="loadData()"><span class="sp" id="sp">↻</span> Refresh</button>
+  </div>
+  <div class="tw">
+    <table>
+      <thead><tr>
+        <th class="c" style="width:40px">#</th>
+        <th>Name</th>
+        <th>Submitted</th>
+        <th class="c">Score</th>
+        <th class="c">Rubric</th>
+        <th class="c">Upvote</th>
+        <th class="c">Recording</th>
+      </tr></thead>
+      <tbody id="tbody">
+        <tr><td colspan="7"><div class="empty">⏳ Loading submissions…</div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- RUBRIC -->
+<div id="rub-view" class="view">
+  <div class="rp">
+    <h2>Manager Scoring</h2>
+    <p>Rate each SDR 1–5 on 13 Rippling AI criteria. Max 65 pts feeds into the leaderboard.</p>
+    <div id="rcards"></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="ov" id="ov" style="display:none" onclick="bgc(event)">
+  <div class="modal">
+    <div class="mh">
+      <div><div class="mt2" id="mt2">Score SDR</div><div class="ms">Rate 1–5 on each criterion · max 65 pts</div></div>
+      <button class="mx" onclick="closeM()">✕</button>
+    </div>
+    <div class="mbody" id="mb"></div>
+    <div class="mf">
+      <div><div class="tl2">Rubric Score</div><div><span class="tn2" id="mtot">0</span><span style="font-size:10px;color:var(--m)">/65</span></div></div>
+      <div style="display:flex;gap:6px;">
+        <button class="bcn" onclick="closeM()">Cancel</button>
+        <button class="bsv" onclick="saveR()">Save Score</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────────────
+const SCRIPT_URL = 'https://script.google.com/a/macros/rippling.com/s/AKfycbx5RdmEjtj3TlqcHUhRIeT-_aB347NYYMCoLBmMd8pzj2ooIXdX7B7WvIRsi9pzokn4Ng/exec';
+const DEADLINE   = new Date('2025-05-16T23:59:59');
+const OPEN_DATE  = new Date('2025-04-21T00:00:00');
+
+const SECS = [
+  {l:'🎯 Talk Track Content', c:[
+    {id:'hook', l:'Hook / Problem Statement',        d:'Opens with a compelling, persona-relevant problem — not generic, not product-first.'},
+    {id:'pos',  l:'Rippling AI vs Generic AI',       d:'Articulates why Rippling AI ≠ bolt-on AI. Makes "built-in, not bolted-on" land clearly.'},
+    {id:'plat', l:'One Platform Differentiator',     d:'Covers HR + IT + Finance data advantage and why connected data makes the AI smarter.'},
+    {id:'act',  l:'AI Takes Action, Not Just Answers',d:'Communicates Rippling AI executes tasks — provisioning, screening, reporting — not just insights.'},
+    {id:'per',  l:'Persona-Specific Pain Points',    d:'Uses correct pain for persona: CFO=people costs, HR=reporting admin, CTO=access/provisioning.'},
+  ]},
+  {l:'📞 Call Structure & Skills', c:[
+    {id:'open',  l:'Permission-Based Opener',          d:'Asks permission before launching in. Sets context, confirms timing, earns the right to continue.'},
+    {id:'pdrop', l:'Priority Drop',                    d:'References a specific priority or pain relevant to the prospect before pivoting to Rippling AI.'},
+    {id:'prim',  l:'Primary Discovery Questions',      d:'High-quality, open-ended questions that uncover real pain — not surface-level checklist questions.'},
+    {id:'fup',   l:'Follow-Up / Drill-Down Questions', d:'Digs deeper on responses. Uses "tell me more", "what does that look like in practice", etc.'},
+    {id:'rec',   l:"Recap of Prospect's Pain",         d:'Paraphrases what the prospect shared before moving to pitch or close. Shows active listening.'},
+    {id:'obj',   l:'Handles Objection Naturally',      d:'Responds to at least one objection using the correct framework. Stays composed.'},
+  ]},
+  {l:'💬 Closing & Command', c:[
+    {id:'cmd', l:'Commands the Message',                    d:'Stays confident and in control. Brings the conversation back to Rippling AI value when challenged.'},
+    {id:'cls', l:'Closing — Authority, Timeline, Next Step',d:'Ends with clear ask. Checks decision authority, uncovers timeline, secures a concrete next step.'},
+  ]},
+];
+const ALL = SECS.flatMap(s => s.c);
+
+// ── LOCAL STATE (rubric scores, upvotes — per browser) ────────────────────
+let L = JSON.parse(localStorage.getItem('rip_v10') || '{}');
+if (!L.up) L.up = {};
+if (!L.vt) L.vt = {};
+if (!L.rb) L.rb = {};
+const sv = () => localStorage.setItem('rip_v10', JSON.stringify(L));
+
+let rows = [], mE = null, draft = {};
+
+// ── FETCH from Apps Script ────────────────────────────────────────────────
+
+
+async function loadData() {
+  setLd(true);
+  try {
+    const res = await fetch(SCRIPT_URL, { credentials: 'include' });
+    const data = await res.json();
+    rows = Array.isArray(data) ? data.filter(r => r.name || r.email) : [];
+    ra();
+    tk(`Loaded ${rows.length} submission${rows.length !== 1 ? 's' : ''}`);
+  } catch(e) {
+    console.error(e);
+    rows = [];
+    ra();
+    tk('⚠️ Could not load data');
+  }
+  setLd(false);
+  document.getElementById('st').textContent = new Date().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
+}
+
+function setLd(on) {
+  document.getElementById('rbtn').disabled = on;
+  document.getElementById('sp').classList.toggle('go', on);
+}
+
+// ── SCORING ───────────────────────────────────────────────────────────────
+function spd(ts) {
+  if (!ts) return 0;
+  const f = Math.max(0, Math.min(1, (new Date(ts) - OPEN_DATE) / (DEADLINE - OPEN_DATE)));
+  return Math.round(100 * (1 - f));
+}
+function ups(e) { return (L.up[e] || 0) * 10; }
+function rbs(e) { const r = L.rb[e]; if (!r) return 0; return ALL.reduce((s,c) => s + (r[c.id] || 0), 0); }
+function tot(row) { return spd(row.timestamp) + ups(row.email) + rbs(row.email); }
+function srt() { return [...rows].sort((a,b) => tot(b) - tot(a)); }
+function ra() { rlb(); rrub(); }
+
+// ── LEADERBOARD ───────────────────────────────────────────────────────────
+function rlb() {
+  const list = srt();
+  const scored = rows.filter(r => L.rb[r.email] && ALL.some(c => L.rb[r.email][c.id])).length;
+  const tup = Object.values(L.up).reduce((s,v) => s+v, 0);
+  document.getElementById('ss').textContent = rows.length;
+  document.getElementById('sc').textContent = scored;
+  document.getElementById('su').textContent = tup;
+  document.getElementById('cl').textContent = list.length;
+
+  if (!list.length) {
+    document.getElementById('tbody').innerHTML = `<tr><td colspan="7"><div class="empty">📭 No submissions yet</div></td></tr>`;
+    return;
+  }
+  const md = ['🥇','🥈','🥉'];
+  document.getElementById('tbody').innerHTML = list.map((row, i) => {
+    const sp = spd(row.timestamp), up = ups(row.email), rb = rbs(row.email), tt = sp+up+rb;
+    const vd = L.vt[row.email], vc = L.up[row.email] || 0, hr = rb > 0;
+    return `<tr class="${i===0?'gr':''}" style="animation-delay:${i*.04}s">
+      <td class="c">${i<3 ? `<span style="font-size:16px">${md[i]}</span>` : `<span style="font-size:12px;font-weight:700;color:var(--m)">${i+1}</span>`}</td>
+      <td><div class="nm">${x(row.name||'—')}</div><div class="em">${x(row.email||'')}</div></td>
+      <td style="font-size:10px;color:var(--m);white-space:nowrap">${fmt(row.timestamp)}</td>
+      <td class="c">${row.timestamp ? `<div class="badge"><div class="tot">${tt}</div><div class="brk">⚡${sp} ★${up} 📋${rb}</div></div>` : `<span style="color:var(--m)">—</span>`}</td>
+      <td class="c"><span class="rc ${hr?'done':'pend'}" onclick="openM('${x(row.email)}','${x(row.name||'')}')">${hr ? `📋 ${rb}/65` : '+ Score'}</span></td>
+      <td class="c"><button class="ubtn ${vd?'vd':''}" onclick="upv('${x(row.email)}')">${vd?'★':'☆'} ${vc}</button></td>
+      <td class="c">${row.loom ? `<a class="lbtn" href="${x(row.loom)}" target="_blank">▶ Listen</a>` : `<span style="color:var(--m)">—</span>`}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── RUBRIC PANEL ──────────────────────────────────────────────────────────
+function rrub() {
+  if (!rows.length) {
+    document.getElementById('rcards').innerHTML = `<div class="empty" style="border:1px solid var(--b);border-radius:10px;">📭 Refresh the leaderboard first</div>`;
+    return;
+  }
+  document.getElementById('rcards').innerHTML = rows.map(row => {
+    const rb = rbs(row.email), r = L.rb[row.email] || {};
+    const secs = SECS.map(sec => `<div>
+      <div class="rst">${sec.l}</div>
+      ${sec.c.map(c => {
+        const v = r[c.id]||0, p=(v/5)*100, cl = v>=4?'#15803d':v>=3?'#d97706':v>=1?'#dc2626':'#e2d9e8';
+        return `<div class="br">
+          <div class="bm"><span style="font-weight:600">${c.l}</span><span style="font-weight:700;color:${cl}">${v?v+'/5':'—'}</span></div>
+          <div class="bt"><div class="bf" style="width:${p}%;background:${cl}"></div></div>
+        </div>`;
+      }).join('')}
+    </div>`).join('');
+    return `<div class="rcard">
+      <div class="rct">
+        <div><div style="font-size:13px;font-weight:700">${x(row.name||'—')}</div><div style="font-size:10px;color:var(--m)">${x(row.email||'')}</div></div>
+        <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;">
+          <div style="text-align:right">
+            <div style="font-size:17px;font-weight:800;color:var(--a)">${rb}<span style="font-size:9px;color:var(--m)">/65</span></div>
+            <div style="font-size:9px;color:var(--m);text-transform:uppercase;letter-spacing:.06em">rubric pts</div>
+          </div>
+          <button onclick="openM('${x(row.email)}','${x(row.name||'')}')" style="padding:6px 12px;background:var(--a);color:#fff;border:none;border-radius:7px;font-family:var(--f);font-size:11px;font-weight:700;cursor:pointer;">${rb ? 'Edit' : 'Score Now'}</button>
+          ${row.loom ? `<a href="${x(row.loom)}" target="_blank" class="lbtn">▶ Listen</a>` : ''}
+        </div>
+      </div>
+      <div class="rcb">
+        <div class="rcg">${secs}${r.notes ? `<div class="nb"><strong style="color:var(--t)">Notes:</strong> ${x(r.notes)}</div>` : ''}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── MODAL ─────────────────────────────────────────────────────────────────
+function openM(email, name) {
+  mE = email; draft = Object.assign({}, L.rb[email] || {});
+  document.getElementById('mt2').textContent = `Score: ${name}`;
+  document.getElementById('mb').innerHTML = SECS.map(sec => `
+    <div class="secl">${sec.l}</div>
+    ${sec.c.map(c => {
+      const v = draft[c.id] || 0;
+      return `<div class="cr">
+        <div style="flex:1;min-width:0"><div class="cll">${c.l}</div><div class="cld">${c.d}</div></div>
+        <div class="stars">${[1,2,3,4,5].map(n => `<button class="sbt ${v>=n?'on':''}" id="sb-${c.id}-${n}" onclick="setS('${c.id}',${n})">${n}</button>`).join('')}</div>
+      </div>`;
+    }).join('')}
+  `).join('') + `<div class="secl">📝 Notes</div><textarea class="rntxt" id="rnotes" placeholder="Feedback for the SDR…">${x(L.rb[email]?.notes || '')}</textarea>`;
+  upTot();
+  document.getElementById('ov').style.display = 'flex';
+}
+
+function setS(id, val) {
+  draft[id] = val;
+  [1,2,3,4,5].forEach(n => { const b = document.getElementById(`sb-${id}-${n}`); if(b) b.className = `sbt ${n<=val?'on':''}`; });
+  upTot();
+}
+function upTot() { document.getElementById('mtot').textContent = ALL.reduce((s,c) => s + (draft[c.id]||0), 0); }
+function saveR() {
+  if (!mE) return;
+  L.rb[mE] = Object.assign({}, draft, {notes: document.getElementById('rnotes').value});
+  sv(); closeM(); ra(); tk('Score saved ✓');
+}
+function closeM() { document.getElementById('ov').style.display = 'none'; mE = null; }
+function bgc(e)   { if (e.target === document.getElementById('ov')) closeM(); }
+
+function upv(email) {
+  if (L.vt[email]) { tk('Already upvoted!'); return; }
+  L.up[email] = (L.up[email] || 0) + 1;
+  L.vt[email] = true;
+  sv(); rlb();
+  tk(`+10 pts for ${rows.find(r=>r.email===email)?.name || email}! ★`);
+}
+
+function sw(t) {
+  document.querySelectorAll('.tb').forEach((b,i) => b.classList.toggle('on', t==='lb'?i===0:i===1));
+  document.getElementById('lb-view').classList.toggle('on',  t==='lb');
+  document.getElementById('rub-view').classList.toggle('on', t==='rub');
+}
+
+function tk(msg) { const e = document.getElementById('toast'); e.textContent = msg; e.classList.add('on'); setTimeout(() => e.classList.remove('on'), 2500); }
+function fmt(s)  { if(!s) return '—'; const d = new Date(s); if(isNaN(d)) return s; return d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' at '+d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}); }
+function x(s)    { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+loadData();
+</script>
+</body>
+</html>
